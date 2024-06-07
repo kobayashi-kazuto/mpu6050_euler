@@ -21,7 +21,7 @@ void setup()
 	delay(2000);
 	Serial.println("*** setup start ***");
  
-	timer = timerBegin(0, 40, true);//タイマの初期化(何番のタイマか(0~3),プリスケーラ(クロックは40MHzなので指定した数で割った信号が得られる今回だと1MHzになるはず),trueで割込みをエッジタイプに)
+	timer = timerBegin(0, 80, true);//タイマの初期化(何番のタイマか(0~3),プリスケーラ(クロックは80MHzなので指定した数で割った信号が得られる今回だと1MHzになるはず),trueで割込みをエッジタイプに)
 	timerAttachInterrupt(timer, &onTimer, true);//第三引数はそろえる
 	timerAlarmWrite(timer, 1000000, true);//第二引数でカウント何回で割込みするか指定(1Mごとだから1秒ごと)
 	timerAlarmEnable(timer);
