@@ -87,6 +87,10 @@ void loop()
   		GyY=Wire.read()<<8|Wire.read();  // 0x45 (GYRO_YOUT_H) & 0x46 (GYRO_YOUT_L)
   		GyZ=Wire.read()<<8|Wire.read();  // 0x47 (GYRO_ZOUT_H) & 0x48 (GYRO_ZOUT_L)
 
+		rad_velocity_roll_1 = rad_velocity_roll;
+		rad_velocity_pitch_1 = rad_velocity_pitch;
+		rad_velocity_yaw_1 = rad_velocity_yaw;
+
 		rad_velocity_roll = (GyX + GyY*sin(rad_roll)*tan(rad_pitch) + GyZ*cos(rad_roll)*tan(rad_pitch))/conv_radv;
 		rad_velocity_pitch = (GyY*cos(rad_roll) - GyZ*sin(rad_roll))/conv_radv;
 		rad_velocity_yaw = (GyY*sin(rad_roll)/cos(rad_pitch) +GyZ*cos(rad_roll)/cos(rad_pitch))/conv_radv;
@@ -94,18 +98,18 @@ void loop()
 		
 
 		if(totalInterruptCounter%2 == 0){
-			Serial.print("AcX = "); Serial.print(AcX);
-  			Serial.print(" | AcY = "); Serial.print(AcY);
-  			Serial.print(" | AcZ = "); Serial.print(AcZ);
-  			Serial.print(" | GyX = "); Serial.print(GyX);
-  			Serial.print(" | GyY = "); Serial.print(GyY);
-  			Serial.print(" | GyZ = "); Serial.println(GyZ);
+			rad_roll = (rad_velocity_roll +rad_velocity_roll_1)/1000/2;
+			rad_pitch = (rad_velocity_pitch + rad_velocity_pitch_1)/1000/2;
+			rad_yaw = (rad_velocity_yaw + rad_velocity_yaw_1)/1000/2;
+			deg_roll = rad_roll*180/M_1_PI;
+			deg_pitch = rad_pitch*180/M_1_PI;
+			deg_yaw = rad_yaw*180/M_PI;
 		}
 
 		if(totalInterruptCounter%20 == 0){
-			Serial.print("AcX = "); Serial.print(AcX);
-  			Serial.print(" | AcY = "); Serial.print(AcY);
-  			Serial.print(" | AcZ = "); Serial.print(AcZ);
+			//Serial.print("AcX = "); Serial.print(AcX);
+  			//Serial.print(" | AcY = "); Serial.print(AcY);
+  			//Serial.print(" | AcZ = "); Serial.print(AcZ);
   			Serial.print(" | GyX = "); Serial.print(GyX);
   			Serial.print(" | GyY = "); Serial.print(GyY);
   			Serial.print(" | GyZ = "); Serial.println(GyZ);
