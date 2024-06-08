@@ -35,6 +35,10 @@ float deg_yaw = 0;
 
 float conv_radv = 2000;
 
+int32_t GyX_total = 0;
+int32_t GyY_total = 0;
+int32_t GyZ_total = 0;
+
 hw_timer_t * timer = NULL;//タイマ設定用のポインタ
 portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;//同期処理用の宣言?
 
@@ -109,10 +113,17 @@ void loop()
 		rad_velocity_yaw = (GyY*sin(rad_roll)/cos(rad_pitch) +GyZ*cos(rad_roll)/cos(rad_pitch))/conv_radv;
 
 		
+		if(totalInterruptCounter <= 200){
+			GyX_total += GyX;
+			GyY_total += GyY;
+			GyZ_total += GyZ;
+		}
+
+		
 		if(totalInterruptCounter == 200){
-			rad_velocity_roll_offset = GyX;
-			rad_velocity_pitch_offset = GyY;
-			rad_velocity_yaw_offset = GyZ;
+			rad_velocity_roll_offset = GyX_total/200;
+			rad_velocity_pitch_offset = GyY_total/200;
+			rad_velocity_yaw_offset = GyZ_total/200;
 			rad_roll = 0;
 			rad_pitch = 0;
 			rad_yaw = 0;
