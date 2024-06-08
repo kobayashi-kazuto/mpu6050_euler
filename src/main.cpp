@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include<Wire.h>
-
+//Z-Y-X系の
 volatile int interruptCounter;//カウンタ変数
 int totalInterruptCounter;//割込み数のカウンタ
 const int MPU_addr=0x68;  // I2C address of the MPU-6050
@@ -13,9 +13,19 @@ float rad_velocity_roll = 0;
 float rad_velocity_pitch = 0;
 float rad_velocity_yaw = 0;
 
+float rad_velocity_roll_1 = 0;
+float rad_velocity_pitch_1 = 0;
+float rad_velocity_yaw_1 = 0;
+
 float rad_roll = 0;
 float rad_pitch = 0;
 float rad_yaw = 0;
+
+float deg_roll = 0;
+float deg_pitch = 0;
+float deg_yaw = 0;
+
+float conv_radv = 2000;
 
 hw_timer_t * timer = NULL;//タイマ設定用のポインタ
 portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;//同期処理用の宣言?
@@ -42,7 +52,7 @@ void setup()
  
 	timer = timerBegin(0, 80, true);//タイマの初期化(何番のタイマか(0~3),プリスケーラ(クロックは80MHzなので指定した数で割った信号が得られる今回だと1MHzになるはず),trueで割込みをエッジタイプに)
 	timerAttachInterrupt(timer, &onTimer, true);//第三引数はそろえる
-	timerAlarmWrite(timer, 1000000, true);//第二引数でカウント何回で割込みするか指定(1Mごとだから1秒ごと)
+	timerAlarmWrite(timer, 500, true);//第二引数でカウント何回で割込みするか指定(1Mごとだから2000Hz)
 	timerAlarmEnable(timer);
 
 	Serial.println("*** setup end ***"); 
@@ -64,7 +74,7 @@ void loop()
 		//Serial.println(totalInterruptCounter);
 
 
-		//1Hz
+		//2kHz
 
 		Wire.beginTransmission(MPU_addr);
 		Wire.write(0x3B);  // starting with register 0x3B (ACCEL_XOUT_H)
@@ -77,9 +87,22 @@ void loop()
   		GyY=Wire.read()<<8|Wire.read();  // 0x45 (GYRO_YOUT_H) & 0x46 (GYRO_YOUT_L)
   		GyZ=Wire.read()<<8|Wire.read();  // 0x47 (GYRO_ZOUT_H) & 0x48 (GYRO_ZOUT_L)
 
+		rad_velocity_roll = (GyX + GyY*sin(rad_roll)*tan(rad_pitch) + GyZ*cos(rad_roll)*tan(rad_pitch))/conv_radv;
+		rad_velocity_pitch = (GyY*cos(rad_roll) - GyZ*sin(rad_roll))/conv_radv;
+		rad_velocity_yaw = (GyY*sin(rad_roll)/cos(rad_pitch) +GyZ*cos(rad_roll)/cos(rad_pitch))/conv_radv;
 
+		
 
-		if(totalInterruptCounter%10 == 0){
+		if(totalInterruptCounter%2 == 0){
+			Serial.print("AcX = "); Serial.print(AcX);
+  			Serial.print(" | AcY = "); Serial.print(AcY);
+  			Serial.print(" | AcZ = "); Serial.print(AcZ);
+  			Serial.print(" | GyX = "); Serial.print(GyX);
+  			Serial.print(" | GyY = "); Serial.print(GyY);
+  			Serial.print(" | GyZ = "); Serial.println(GyZ);
+		}
+
+		if(totalInterruptCounter%20 == 0){
 			Serial.print("AcX = "); Serial.print(AcX);
   			Serial.print(" | AcY = "); Serial.print(AcY);
   			Serial.print(" | AcZ = "); Serial.print(AcZ);
