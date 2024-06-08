@@ -110,9 +110,9 @@ void loop()
 			//Serial.print("AcX = "); Serial.print(AcX);
   			//Serial.print(" | AcY = "); Serial.print(AcY);
   			//Serial.print(" | AcZ = "); Serial.print(AcZ);
-  			Serial.print(" | GyX = "); Serial.print(GyX);
-  			Serial.print(" | GyY = "); Serial.print(GyY);
-  			Serial.print(" | GyZ = "); Serial.println(GyZ);
+  			Serial.print(" | GyX = "); Serial.print(deg_roll);
+  			Serial.print(" | GyY = "); Serial.print(deg_pitch);
+  			Serial.print(" | GyZ = "); Serial.println(deg_yaw);
 		}
  
 	}
