@@ -25,7 +25,7 @@ float deg_roll = 0;
 float deg_pitch = 0;
 float deg_yaw = 0;
 
-float conv_radv = 2000;
+float conv_radv = 131;
 
 hw_timer_t * timer = NULL;//タイマ設定用のポインタ
 portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;//同期処理用の宣言?
@@ -83,6 +83,7 @@ void loop()
   		AcX=Wire.read()<<8|Wire.read();  // 0x3B (ACCEL_XOUT_H) & 0x3C (ACCEL_XOUT_L)    
   		AcY=Wire.read()<<8|Wire.read();  // 0x3D (ACCEL_YOUT_H) & 0x3E (ACCEL_YOUT_L)
   		AcZ=Wire.read()<<8|Wire.read();  // 0x3F (ACCEL_ZOUT_H) & 0x40 (ACCEL_ZOUT_L)
+		Tmp=Wire.read()<<8|Wire.read();  // 0x41 (TEMP_OUT_H) & 0x42 (TEMP_OUT_L)
   		GyX=Wire.read()<<8|Wire.read();  // 0x43 (GYRO_XOUT_H) & 0x44 (GYRO_XOUT_L)
   		GyY=Wire.read()<<8|Wire.read();  // 0x45 (GYRO_YOUT_H) & 0x46 (GYRO_YOUT_L)
   		GyZ=Wire.read()<<8|Wire.read();  // 0x47 (GYRO_ZOUT_H) & 0x48 (GYRO_ZOUT_L)
@@ -91,20 +92,23 @@ void loop()
 		rad_velocity_pitch_1 = rad_velocity_pitch;
 		rad_velocity_yaw_1 = rad_velocity_yaw;
 
-		rad_velocity_roll = (GyX + GyY*sin(rad_roll)*tan(rad_pitch) + GyZ*cos(rad_roll)*tan(rad_pitch))/conv_radv;
-		rad_velocity_pitch = (GyY*cos(rad_roll) - GyZ*sin(rad_roll))/conv_radv;
-		rad_velocity_yaw = (GyY*sin(rad_roll)/cos(rad_pitch) +GyZ*cos(rad_roll)/cos(rad_pitch))/conv_radv;
+		//rad_velocity_roll = (GyX + GyY*sin(rad_roll)*tan(rad_pitch) + GyZ*cos(rad_roll)*tan(rad_pitch))*M_1_PI/180/conv_radv;
+		//rad_velocity_pitch = (GyY*cos(rad_roll) - GyZ*sin(rad_roll))*M_1_PI/180/conv_radv;
+		//rad_velocity_yaw = (GyY*sin(rad_roll)/cos(rad_pitch) +GyZ*cos(rad_roll)/cos(rad_pitch))*M_1_PI/180/conv_radv;
+		rad_velocity_roll = GyX/conv_radv;
+		rad_velocity_pitch = GyY/conv_radv;
+		rad_velocity_yaw = GyZ/conv_radv;
 
 		
 
-		if(totalInterruptCounter%2 == 0){
-			rad_roll += (rad_velocity_roll +rad_velocity_roll_1)/1000/2;
-			rad_pitch += (rad_velocity_pitch + rad_velocity_pitch_1)/1000/2;
-			rad_yaw += (rad_velocity_yaw + rad_velocity_yaw_1)/1000/2;
+		//if(totalInterruptCounter%2 == 0){
+			rad_roll += (rad_velocity_roll +rad_velocity_roll_1)/2000/2;
+			rad_pitch += (rad_velocity_pitch + rad_velocity_pitch_1)/2000/2;
+			rad_yaw += (rad_velocity_yaw + rad_velocity_yaw_1)/2000/2;
 			deg_roll = rad_roll*180/M_1_PI;
 			deg_pitch = rad_pitch*180/M_1_PI;
 			deg_yaw = rad_yaw*180/M_PI;
-		}
+		//}
 
 		if(totalInterruptCounter%20 == 0){
 			//Serial.print("AcX = "); Serial.print(AcX);
