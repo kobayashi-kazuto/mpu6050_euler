@@ -98,9 +98,9 @@ void loop()
 		
 
 		if(totalInterruptCounter%2 == 0){
-			rad_roll = (rad_velocity_roll +rad_velocity_roll_1)/1000/2;
-			rad_pitch = (rad_velocity_pitch + rad_velocity_pitch_1)/1000/2;
-			rad_yaw = (rad_velocity_yaw + rad_velocity_yaw_1)/1000/2;
+			rad_roll += (rad_velocity_roll +rad_velocity_roll_1)/1000/2;
+			rad_pitch += (rad_velocity_pitch + rad_velocity_pitch_1)/1000/2;
+			rad_yaw += (rad_velocity_yaw + rad_velocity_yaw_1)/1000/2;
 			deg_roll = rad_roll*180/M_1_PI;
 			deg_pitch = rad_pitch*180/M_1_PI;
 			deg_yaw = rad_yaw*180/M_PI;
