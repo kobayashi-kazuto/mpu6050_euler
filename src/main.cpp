@@ -13,19 +13,27 @@ float rad_velocity_roll = 0;
 float rad_velocity_pitch = 0;
 float rad_velocity_yaw = 0;
 
-float rad_velocity_roll_1 = 0;
-float rad_velocity_pitch_1 = 0;
-float rad_velocity_yaw_1 = 0;
+float rad_velocity_roll_offset = 0;
+float rad_velocity_yaw_offset = 0;
+float rad_velocity_pitch_offset = 0;
+
+int16_t rad_velocity_roll_1 = 0;
+int16_t rad_velocity_pitch_1 = 0;
+int16_t rad_velocity_yaw_1 = 0;
 
 float rad_roll = 0;
 float rad_pitch = 0;
 float rad_yaw = 0;
 
+float rad_roll_offset = 0;
+float rad_pitch_offset = 0;
+float rad_yaw_offset = 0;
+
 float deg_roll = 0;
 float deg_pitch = 0;
 float deg_yaw = 0;
 
-float conv_radv = 131;
+float conv_radv = 2000;
 
 hw_timer_t * timer = NULL;//タイマ設定用のポインタ
 portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;//同期処理用の宣言?
@@ -88,25 +96,34 @@ void loop()
   		GyY=Wire.read()<<8|Wire.read();  // 0x45 (GYRO_YOUT_H) & 0x46 (GYRO_YOUT_L)
   		GyZ=Wire.read()<<8|Wire.read();  // 0x47 (GYRO_ZOUT_H) & 0x48 (GYRO_ZOUT_L)
 
+		GyX = GyX - rad_velocity_roll_offset;
+		GyY = GyY - rad_velocity_pitch_offset;
+		GyZ = GyZ - rad_velocity_yaw_offset;
+
 		rad_velocity_roll_1 = rad_velocity_roll;
 		rad_velocity_pitch_1 = rad_velocity_pitch;
 		rad_velocity_yaw_1 = rad_velocity_yaw;
 
-		//rad_velocity_roll = (GyX + GyY*sin(rad_roll)*tan(rad_pitch) + GyZ*cos(rad_roll)*tan(rad_pitch))*M_1_PI/180/conv_radv;
-		//rad_velocity_pitch = (GyY*cos(rad_roll) - GyZ*sin(rad_roll))*M_1_PI/180/conv_radv;
-		//rad_velocity_yaw = (GyY*sin(rad_roll)/cos(rad_pitch) +GyZ*cos(rad_roll)/cos(rad_pitch))*M_1_PI/180/conv_radv;
-		rad_velocity_roll = GyX/conv_radv;
-		rad_velocity_pitch = GyY/conv_radv;
-		rad_velocity_yaw = GyZ/conv_radv;
+		rad_velocity_roll = (GyX + GyY*sin(rad_roll)*tan(rad_pitch) + GyZ*cos(rad_roll)*tan(rad_pitch))/conv_radv;
+		rad_velocity_pitch = (GyY*cos(rad_roll) - GyZ*sin(rad_roll))/conv_radv;
+		rad_velocity_yaw = (GyY*sin(rad_roll)/cos(rad_pitch) +GyZ*cos(rad_roll)/cos(rad_pitch))/conv_radv;
 
 		
+		if(totalInterruptCounter == 200){
+			rad_velocity_roll_offset = GyX;
+			rad_velocity_pitch_offset = GyY;
+			rad_velocity_yaw_offset = GyZ;
+			rad_roll = 0;
+			rad_pitch = 0;
+			rad_yaw = 0;
+		}
 
 		//if(totalInterruptCounter%2 == 0){
 			rad_roll += (rad_velocity_roll +rad_velocity_roll_1)/2000/2;
 			rad_pitch += (rad_velocity_pitch + rad_velocity_pitch_1)/2000/2;
 			rad_yaw += (rad_velocity_yaw + rad_velocity_yaw_1)/2000/2;
-			deg_roll = rad_roll*180/M_1_PI;
-			deg_pitch = rad_pitch*180/M_1_PI;
+			deg_roll = rad_roll*180/M_PI;
+			deg_pitch = rad_pitch*180/M_PI;
 			deg_yaw = rad_yaw*180/M_PI;
 		//}
 
