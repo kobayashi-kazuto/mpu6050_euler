@@ -126,17 +126,17 @@ void loop()
 		rad_velocity_yaw = (GyY*sin(rad_roll)/cos(rad_pitch) +GyZ*cos(rad_roll)/cos(rad_pitch))/conv_radv;
 
 		
-		if(totalInterruptCounter <= 200){
+		if(totalInterruptCounter <= 400){
 			GyX_total += GyX;
 			GyY_total += GyY;
 			GyZ_total += GyZ;
 		}
 
 		
-		if(totalInterruptCounter == 200){
-			rad_velocity_roll_offset = GyX_total/200;
-			rad_velocity_pitch_offset = GyY_total/200;
-			rad_velocity_yaw_offset = GyZ_total/200;
+		if(totalInterruptCounter == 400){
+			rad_velocity_roll_offset = GyX_total/400;
+			rad_velocity_pitch_offset = GyY_total/400;
+			rad_velocity_yaw_offset = GyZ_total/400;
 			rad_roll = 0;
 			rad_pitch = 0;
 			rad_yaw = 0;
