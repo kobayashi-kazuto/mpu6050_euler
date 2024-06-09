@@ -40,6 +40,14 @@ float acc_deg_pitch = 0;
 
 float conv_radv = 2000;
 
+float fusion_rad_roll = 0;
+float fusion_rad_pitch = 0;
+
+float fusion_deg_roll = 0;
+float fusion_deg_pitch = 0;
+
+float ratio = 0.7;
+
 int32_t GyX_total = 0;
 int32_t GyY_total = 0;
 int32_t GyZ_total = 0;
@@ -145,9 +153,15 @@ void loop()
 			acc_deg_roll = acc_rad_roll*180/M_PI;
 			acc_deg_pitch = acc_rad_pitch*180/M_PI;
 
+			fusion_rad_roll = rad_roll*ratio + acc_rad_roll*(1-ratio);
+			fusion_rad_pitch = rad_pitch*ratio + acc_rad_pitch*(1-ratio);
+
 			deg_roll = rad_roll*180/M_PI;
 			deg_pitch = rad_pitch*180/M_PI;
 			deg_yaw = rad_yaw*180/M_PI;
+
+			fusion_deg_roll = fusion_rad_roll*180/M_PI;
+			fusion_deg_pitch = fusion_rad_pitch*180/M_PI;
 
 
 		//}
@@ -157,7 +171,10 @@ void loop()
   			Serial.print(" | AcY = "); Serial.print(acc_deg_pitch);
   			Serial.print(" | GyX = "); Serial.print(deg_roll);
   			Serial.print(" | GyY = "); Serial.print(deg_pitch);
-  			Serial.print(" | GyZ = "); Serial.println(deg_yaw);
+  			Serial.print(" | GyZ = "); Serial.print(deg_yaw);
+			Serial.print(" | FusX = "); Serial.print(fusion_deg_roll);
+			Serial.print(" | FusY = "); Serial.println(fusion_deg_pitch);
+			
 		}
  
 	}
