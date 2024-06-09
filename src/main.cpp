@@ -33,6 +33,11 @@ float deg_roll = 0;
 float deg_pitch = 0;
 float deg_yaw = 0;
 
+float acc_rad_roll = 0;
+float acc_rad_pitch = 0;
+float acc_deg_roll = 0;
+float acc_deg_pitch = 0;
+
 float conv_radv = 2000;
 
 int32_t GyX_total = 0;
@@ -133,15 +138,23 @@ void loop()
 			rad_roll += (rad_velocity_roll +rad_velocity_roll_1)/2000/2;
 			rad_pitch += (rad_velocity_pitch + rad_velocity_pitch_1)/2000/2;
 			rad_yaw += (rad_velocity_yaw + rad_velocity_yaw_1)/2000/2;
+
+			acc_rad_roll = atan2(AcY,AcZ);
+			acc_rad_pitch = atan2(-AcX,sqrt(AcY*AcY + AcZ*AcZ));
+
+			acc_deg_roll = acc_rad_roll*180/M_PI;
+			acc_deg_pitch = acc_rad_pitch*180/M_PI;
+
 			deg_roll = rad_roll*180/M_PI;
 			deg_pitch = rad_pitch*180/M_PI;
 			deg_yaw = rad_yaw*180/M_PI;
+
+
 		//}
 
 		if(totalInterruptCounter%20 == 0){
-			//Serial.print("AcX = "); Serial.print(AcX);
-  			//Serial.print(" | AcY = "); Serial.print(AcY);
-  			//Serial.print(" | AcZ = "); Serial.print(AcZ);
+			Serial.print("AcX = "); Serial.print(acc_deg_roll);
+  			Serial.print(" | AcY = "); Serial.print(acc_deg_pitch);
   			Serial.print(" | GyX = "); Serial.print(deg_roll);
   			Serial.print(" | GyY = "); Serial.print(deg_pitch);
   			Serial.print(" | GyZ = "); Serial.println(deg_yaw);
